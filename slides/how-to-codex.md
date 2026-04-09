@@ -19,7 +19,7 @@ class: center, middle
 2. **スマホからAIで修正案を作り、GitHubに反映する**
 3. **GitHub Pagesで公開してLink to Bioに追加**
 
-> ゴール: `https://masakadop.github.io/slides/how-to-codex/` を公開し、プロフィールに導線を置く
+> ゴール: `https://slides.deno.dev/html?url=https://masakadop.github.io/slides/how-to-codex.md` を公開し、プロフィールに導線を置く
 
 ---
 
@@ -92,22 +92,19 @@ class: center, middle
 
 ---
 
-# 3. remark.jsで.mdをリアルタイム表示
+# 3. slides.deno.devで.mdを表示
 
 ---
 
-# remark.js最小構成
+# slides.deno.devリンク構成
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/remark/0.15.0/remark.min.js"></script>
-<script>
-  remark.create({ source: markdownText })
-</script>
+https://slides.deno.dev/html?url=https://masakadop.github.io/slides/how-to-codex.md
 ```
 
 - スライド本体は `how-to-codex.md`
 - 区切りは `---`
-- 事前ビルド不要で、GitHub Pages上でそのまま表示可能
+- 表示は slides.deno.dev 側が行うため、GitHub Pages側のHTML実装は不要
 
 ---
 
@@ -127,12 +124,12 @@ class: center, middle
 
 このリポジトリでは次のURLで公開:
 
-## `https://masakadop.github.io/slides/how-to-codex/`
+## `https://slides.deno.dev/html?url=https://masakadop.github.io/slides/how-to-codex.md`
 
 Link to Bio (`index.html`) には以下の導線を配置済み:
 
 ```html
-<a class="link" href="https://masakadop.github.io/slides/how-to-codex/">GitHub×AI バイブコーディング How To (Slides)</a>
+<a class="link" href="https://slides.deno.dev/html?url=https://masakadop.github.io/slides/how-to-codex.md">GitHub×AI バイブコーディング How To (Slides)</a>
 ```
 
 ---
@@ -154,6 +151,6 @@ class: center, middle
 
 # 完了 🎉
 
-GitHub作成 → スマホAI編集 → remark.js表示 → Link to Bio導線化
+GitHub作成 → スマホAI編集 → slides.deno.dev表示 → Link to Bio導線化
 
-`https://masakadop.github.io/slides/how-to-codex/`
+`https://slides.deno.dev/html?url=https://masakadop.github.io/slides/how-to-codex.md`
