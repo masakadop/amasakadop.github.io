@@ -2,7 +2,7 @@
   "name": "masakadop-github-io",
   "private": true,
   "scripts": {
-    "build:slides": "slidev build slides/how-to-codex.md --base /how-to-codex/ --out dist/how-to-codex"
+    "build:slides": "slidev build slides/how-to-codex.md --base /slides/how-to-codex/ --out dist/slides/how-to-codex"
   },
   "devDependencies": {
     "@slidev/cli": "^0.51.6"
