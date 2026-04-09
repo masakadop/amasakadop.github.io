@@ -61,13 +61,91 @@
       .error {
         color: #ffd6d6;
       }
+
+      .error small {
+        display: block;
+        margin-top: 8px;
+        color: #ffd6d6;
+        opacity: 0.9;
+      }
+
+      .warning-banner {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 194, 194, 0.55);
+        background: rgba(61, 0, 0, 0.8);
+        color: #ffe7e7;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+      }
+
+      .warning-banner strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .fallback-plain {
+        margin: 24px;
+        padding: 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 194, 194, 0.45);
+        background: rgba(0, 0, 0, 0.5);
+        color: #ffe7e7;
+        white-space: pre-wrap;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
     </style>
   </head>
   <body>
     <div id="status" class="loading">スライドを読み込み中...</div>
+    <script id="fallback-markdown" type="text/markdown">
+class: center, middle
+
+# GitHubアカウント作成 → Codex連携
+## → Link to BioでGitHub Pages公開
+
+手順をこのスライド1本で。
+
+対象: はじめての人向け
+
+---
+
+# 読み込み失敗時のデフォルト表示
+
+`slides/how-to-codex.md` の読み取りに失敗したため、
+このHTMLに直書きしたデフォルト版スライドを表示しています。
+
+エラー原因は画面上部の赤いメッセージで確認できます。
+
+---
+
+# 0. 全体像
+
+---
+
+# 今日やること（3ステップ）
+
+1. **GitHubアカウントを作る**
+2. **Codex (CLI) をGitHubと連携する**
+3. **GitHub Pagesで公開してLink to Bioに追加**
+
+---
+
+class: center, middle
+
+# 完了 🎉
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
     <script>
+      const fallbackMarkdown = document.getElementById('fallback-markdown')?.textContent?.trim();
       const markdownCandidates = [
         './how-to-codex.md',
         'https://raw.githubusercontent.com/masakadop/masakadop.github.io/main/slides/how-to-codex.md'
@@ -93,7 +171,7 @@
               throw new Error('MarkdownではなくHTMLが返されました');
             }
 
-            return markdown;
+            return { markdown, source: url };
           } catch (error) {
             errors.push(`${url}: ${error.message}`);
           }
@@ -102,15 +180,45 @@
         throw new Error(errors.join(' / '));
       }
 
+      function showLoadErrorBanner(message) {
+        const banner = document.createElement('div');
+        banner.className = 'warning-banner';
+        banner.innerHTML = `<strong>Markdown読み込み失敗</strong><span>${message}</span>`;
+        document.body.appendChild(banner);
+      }
+
+      function showFatalError(message, fallbackText) {
+        const statusEl = document.getElementById('status');
+        statusEl.className = 'error';
+        statusEl.innerHTML = `スライドの表示に失敗しました。<small>${message}</small>`;
+
+        if (fallbackText) {
+          const pre = document.createElement('pre');
+          pre.className = 'fallback-plain';
+          pre.textContent = fallbackText;
+          document.body.appendChild(pre);
+        }
+      }
+
       async function boot() {
         const statusEl = document.getElementById('status');
+        let markdown = fallbackMarkdown;
+        let loadError = null;
 
         try {
-          const markdown = await loadMarkdown();
-          statusEl.remove();
+          const loaded = await loadMarkdown();
+          markdown = loaded.markdown;
+        } catch (error) {
+          loadError = error;
+        }
+
+        try {
+          if (!window.remark || typeof window.remark.create !== 'function') {
+            throw new Error('remark.jsの読み込みに失敗しました');
+          }
 
           remark.create({
-            source: markdown,
+            source: markdown || '# スライドデータがありません',
             ratio: '16:9',
             navigation: {
               scroll: false,
@@ -119,9 +227,17 @@
             },
             highlightStyle: 'monokai'
           });
+
+          statusEl.remove();
+
+          if (loadError) {
+            showLoadErrorBanner(loadError.message);
+          }
         } catch (error) {
-          statusEl.className = 'error';
-          statusEl.innerHTML = `スライドの表示に失敗しました。<br><small>${error.message}</small>`;
+          const detail = loadError
+            ? `Markdown読み込み失敗: ${loadError.message} / スライド描画失敗: ${error.message}`
+            : error.message;
+          showFatalError(detail, fallbackMarkdown);
         }
       }
 
