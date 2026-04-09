@@ -26,21 +26,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build slides from Markdown (Slidev)
-        run: |
-          npm install --no-audit --no-fund
-          npm run build:slides
-
       - name: Build Pages artifact
         run: |
           mkdir -p site
           cp index.html site/index.html
-          cp -r dist/slides/how-to-codex site/slides
+          cp -r slides site/slides
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

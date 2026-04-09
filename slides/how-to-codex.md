@@ -1,25 +1,12 @@
----
-theme: seriph
-background: https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80
-title: GitHubアカウント作成→Codex連携→Link to Bioへ公開
-info: |
-  GitHub初心者向けの実践手順
-class: text-center
-transition: slide-left
-mdc: true
----
+class: center, middle
 
 # GitHubアカウント作成 → Codex連携
 ## → Link to BioでGitHub Pages公開
 
 手順をこのスライド1本で。
 
-<div class="pt-8">
-  <span class="px-2 py-1 rounded bg-white/20">対象: はじめての人向け</span>
-</div>
+対象: はじめての人向け
 
----
-layout: section
 ---
 
 # 0. 全体像
@@ -29,13 +16,11 @@ layout: section
 # 今日やること（3ステップ）
 
 1. **GitHubアカウントを作る**
-2. **Codex(CLI)をGitHubと連携する**
+2. **Codex (CLI) をGitHubと連携する**
 3. **GitHub Pagesで公開してLink to Bioに追加**
 
-> ゴール: `https://masakadop.github.io/how-to-codex/` を公開し、プロフィールに導線を置く
+> ゴール: `https://masakadop.github.io/slides/how-to-codex/` を公開し、プロフィールに導線を置く
 
----
-layout: section
 ---
 
 # 1. GitHubアカウント作成
@@ -50,6 +35,7 @@ layout: section
 4. Profile（表示名・自己紹介）を設定
 
 **おすすめ初期設定**
+
 - 2段階認証（2FA）を有効化
 - SSHキーを登録（開発PCで使う場合）
 
@@ -61,12 +47,11 @@ layout: section
 - 例: `masakadop.github.io`
 
 作成時の推奨:
+
 - Public
 - READMEあり
 - mainブランチ
 
----
-layout: section
 ---
 
 # 2. Codex連携
@@ -99,47 +84,38 @@ codex
 ```
 
 Codexでやる代表例:
+
 - HTML/CSS修正
 - 記事やスライド生成
 - コミットメッセージ作成補助
 
 ---
-layout: section
----
 
-# 3. Slidevで.mdからスライド作成
+# 3. remark.jsで.mdをリアルタイム表示
 
 ---
 
-# Slidev最小構成
+# remark.js最小構成
 
-```bash
-# プロジェクト直下で
-npm init -y
-npm i -D @slidev/cli
-
-# slides.md を作成
-npx slidev slides.md
+```html
+<script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
+<script>
+  remark.create({ source: markdownText })
+</script>
 ```
 
-- `slides.md` がスライド本体
-- `---` でページ区切り
-- Markdown中心で作れる
+- スライド本体は `how-to-codex.md`
+- 区切りは `---`
+- 事前ビルド不要で、GitHub Pages上でそのまま表示可能
 
 ---
 
-# GitHub Pages向けにビルド
+# GitHub Actionsでの事前生成を削減
 
-```bash
-# how-to-codex ディレクトリへ静的出力
-npx slidev build slides.md --base /how-to-codex/ --out how-to-codex
-```
+- Slidevビルドを実行しないため、Node.jsセットアップが不要
+- `index.html` と `slides/` ディレクトリをそのままPagesへ配置
+- Markdownを更新してpushするだけで反映
 
-- `--base` は公開先パスに合わせる
-- 出力先 `how-to-codex/` をそのまま公開可能
-
----
-layout: section
 ---
 
 # 4. 公開とLink to Bio追加
@@ -150,34 +126,33 @@ layout: section
 
 このリポジトリでは次のURLで公開:
 
-## `https://masakadop.github.io/how-to-codex/`
+## `https://masakadop.github.io/slides/how-to-codex/`
 
-Link to Bio (`index.html`) にボタン追加:
+Link to Bio (`index.html`) には以下の導線を配置済み:
 
 ```html
-<a class="link" href="https://masakadop.github.io/how-to-codex/">GitHub×Codex How To Slides</a>
+<a class="link" href="https://masakadop.github.io/slides/how-to-codex/">GitHub×Codex How To (Slides)</a>
 ```
 
 ---
 
 # 更新運用（おすすめ）
 
-- 手順変更が出たら `slides.md` を更新
-- `npx slidev build ...` で再ビルド
+- 手順変更が出たら `slides/how-to-codex.md` を更新
 - commit & push で反映
 
 **公開後チェック**
+
 - PC/スマホで表示確認
 - リンク切れ確認
 - Link to Bioから遷移確認
 
 ---
-layout: center
-class: text-center
----
+
+class: center, middle
 
 # 完了 🎉
 
-GitHub作成 → Codex連携 → Slidev公開 → Link to Bio導線化
+GitHub作成 → Codex連携 → remark.js表示 → Link to Bio導線化
 
-`https://masakadop.github.io/how-to-codex/`
+`https://masakadop.github.io/slides/how-to-codex/`
