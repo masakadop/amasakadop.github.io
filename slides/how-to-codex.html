@@ -145,7 +145,10 @@ class: center, middle
 
     <script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
     <script>
-      const fallbackMarkdown = document.getElementById('fallback-markdown')?.textContent?.trim();
+      const fallbackMarkdownNode = document.getElementById('fallback-markdown');
+      const fallbackMarkdown = fallbackMarkdownNode && fallbackMarkdownNode.textContent
+        ? fallbackMarkdownNode.textContent.trim()
+        : '';
       const markdownCandidates = [
         './how-to-codex.md',
         'https://raw.githubusercontent.com/masakadop/masakadop.github.io/main/slides/how-to-codex.md'
