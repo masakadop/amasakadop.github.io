@@ -1,20 +1,15 @@
 # masakadop.github.io
 
-Link to Bio サイトと、Slidevで作成した GitHub/Codex 連携ハウツースライドを管理するリポジトリです。
+Link to Bio サイトと、GitHub/Codex 連携ハウツー資料を管理するリポジトリです。
 
-## スライドの場所
+## スライド資料の場所
 
 - ソース: `slides/how-to-codex.md`
-- 公開URL: `https://masakadop.github.io/how-to-codex/`
-
-## ローカルビルド
-
-```bash
-npm install
-npm run build:slides
-```
+- 公開URL: `https://masakadop.github.io/slides/how-to-codex.md`
 
 ## デプロイ
 
 `main` ブランチに push すると GitHub Actions (`.github/workflows/deploy-pages.yml`) が実行され、
-`index.html` と `how-to-codex` スライドを GitHub Pages へデプロイします。
+`index.html` と `slides/how-to-codex.md` をそのまま GitHub Pages へデプロイします。
+
+> 現在はビルドを行わない構成です。Node.js / npm のセットアップは不要です。

@@ -26,23 +26,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Slidev deck
-        run: npm run build:slides
-
       - name: Build Pages artifact
         run: |
-          mkdir -p site
+          mkdir -p site/slides
           cp index.html site/index.html
-          cp -r dist/how-to-codex site/how-to-codex
+          cp slides/how-to-codex.md site/slides/how-to-codex.md
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
