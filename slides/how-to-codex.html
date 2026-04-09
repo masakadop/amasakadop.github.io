@@ -3,134 +3,96 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="GitHub×Codexハウツースライド" />
+    <meta name="description" content="GitHub×Codexハウツースライド (remark.js)" />
     <title>GitHub×Codex How To Slides</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css"
-      id="theme"
-    />
     <style>
       :root {
         color-scheme: dark;
       }
 
+      html,
       body {
         margin: 0;
+        width: 100%;
+        height: 100%;
         background: #050508;
+        font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif;
       }
 
-      .loading {
+      .remark-slide-content {
+        background: #050508;
+        color: #e8fffb;
+        font-size: 1.9rem;
+        line-height: 1.5;
+      }
+
+      .remark-slide-content h1,
+      .remark-slide-content h2,
+      .remark-slide-content h3 {
+        color: #79f4ff;
+        line-height: 1.2;
+      }
+
+      .remark-inline-code,
+      .remark-code {
+        font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      }
+
+      .remark-code {
+        font-size: 1.2rem;
+        border-radius: 10px;
+      }
+
+      .remark-slide-number {
+        color: #9ce4ff;
+      }
+
+      .loading,
+      .error {
         position: fixed;
         inset: 0;
         display: grid;
         place-items: center;
-        font-family: "Noto Sans JP", sans-serif;
+        text-align: center;
+        padding: 24px;
         color: #e8fffb;
       }
 
       .error {
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 24px;
-        font-family: "Noto Sans JP", sans-serif;
         color: #ffd6d6;
-      }
-
-      .reveal h1,
-      .reveal h2,
-      .reveal h3 {
-        text-transform: none;
-      }
-
-      .reveal section {
-        text-align: left;
-      }
-
-      .reveal section.center {
-        text-align: center;
       }
     </style>
   </head>
   <body>
-    <div class="loading" id="loading">スライドを読み込み中...</div>
+    <div id="status" class="loading">スライドを読み込み中...</div>
 
-    <div class="reveal" style="display: none" id="deck">
-      <div class="slides" id="slides"></div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
     <script>
-      const markdownPath = './how-to-codex.md';
-      const slidesEl = document.getElementById('slides');
-      const loadingEl = document.getElementById('loading');
-      const deckEl = document.getElementById('deck');
-
-      function stripInitialFrontMatter(source) {
-        const lines = source.replace(/\r\n/g, '\n').split('\n');
-        if (lines[0]?.trim() !== '---') return source;
-
-        const end = lines.slice(1).findIndex((line) => line.trim() === '---');
-        if (end === -1) return source;
-
-        return lines.slice(end + 2).join('\n');
-      }
-
-      function isMetaBlock(block) {
-        const trimmed = block.trim();
-        if (!trimmed) return true;
-
-        const lines = trimmed.split('\n').map((line) => line.trim()).filter(Boolean);
-        if (lines.length === 0) return true;
-
-        return lines.every((line) => /^[a-zA-Z][\w-]*\s*:\s*.+$/.test(line));
-      }
-
       async function boot() {
+        const statusEl = document.getElementById('status');
+
         try {
-          const response = await fetch(markdownPath, { cache: 'no-store' });
+          const response = await fetch('./how-to-codex.md', { cache: 'no-store' });
           if (!response.ok) {
             throw new Error(`${response.status} ${response.statusText}`);
           }
 
-          const raw = await response.text();
-          const withoutFrontMatter = stripInitialFrontMatter(raw);
-          const chunks = withoutFrontMatter
-            .split(/\n---\n/g)
-            .map((chunk) => chunk.trim())
-            .filter((chunk) => !isMetaBlock(chunk));
+          const markdown = await response.text();
+          statusEl.remove();
 
-          if (chunks.length === 0) {
-            throw new Error('スライドを抽出できませんでした。');
-          }
-
-          chunks.forEach((chunk) => {
-            const section = document.createElement('section');
-            if (/class\s*:\s*text-center/.test(chunk)) {
-              section.classList.add('center');
-            }
-            section.innerHTML = marked.parse(chunk);
-            slidesEl.appendChild(section);
+          remark.create({
+            source: markdown,
+            ratio: '16:9',
+            navigation: {
+              scroll: false,
+              touch: true,
+              click: false
+            },
+            highlightStyle: 'monokai'
           });
-
-          loadingEl.remove();
-          deckEl.style.display = 'block';
-
-          const deck = new Reveal(deckEl, {
-            hash: true,
-            transition: 'slide',
-            controlsTutorial: false
-          });
-
-          await deck.initialize();
         } catch (error) {
-          loadingEl.className = 'error';
-          loadingEl.textContent = `スライドの表示に失敗しました: ${error.message}`;
+          statusEl.className = 'error';
+          statusEl.textContent = `スライドの表示に失敗しました: ${error.message}`;
         }
       }
 
