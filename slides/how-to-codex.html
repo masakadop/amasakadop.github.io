@@ -68,16 +68,45 @@
 
     <script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
     <script>
+      const markdownCandidates = [
+        './how-to-codex.md',
+        'https://raw.githubusercontent.com/masakadop/masakadop.github.io/main/slides/how-to-codex.md'
+      ];
+
+      function looksLikeHtml(text) {
+        const sample = text.trim().slice(0, 200).toLowerCase();
+        return sample.startsWith('<!doctype html') || sample.startsWith('<html');
+      }
+
+      async function loadMarkdown() {
+        const errors = [];
+
+        for (const url of markdownCandidates) {
+          try {
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) {
+              throw new Error(`${response.status} ${response.statusText}`);
+            }
+
+            const markdown = await response.text();
+            if (looksLikeHtml(markdown)) {
+              throw new Error('MarkdownではなくHTMLが返されました');
+            }
+
+            return markdown;
+          } catch (error) {
+            errors.push(`${url}: ${error.message}`);
+          }
+        }
+
+        throw new Error(errors.join(' / '));
+      }
+
       async function boot() {
         const statusEl = document.getElementById('status');
 
         try {
-          const response = await fetch('./how-to-codex.md', { cache: 'no-store' });
-          if (!response.ok) {
-            throw new Error(`${response.status} ${response.statusText}`);
-          }
-
-          const markdown = await response.text();
+          const markdown = await loadMarkdown();
           statusEl.remove();
 
           remark.create({
@@ -92,7 +121,7 @@
           });
         } catch (error) {
           statusEl.className = 'error';
-          statusEl.textContent = `スライドの表示に失敗しました: ${error.message}`;
+          statusEl.innerHTML = `スライドの表示に失敗しました。<br><small>${error.message}</small>`;
         }
       }
 
