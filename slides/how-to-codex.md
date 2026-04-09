@@ -98,7 +98,7 @@ Codexでやる代表例:
 # remark.js最小構成
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/remark@0.15.0/remark.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remark/0.15.0/remark.min.js"></script>
 <script>
   remark.create({ source: markdownText })
 </script>
